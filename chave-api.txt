@@ -1,3 +1,0 @@
-AIzaSyDmVZJwWFJ9Now_0oLw72pQzbdUUmOy4P0
-MongoDB - jooaogabriiiel - @llons-Y42
-mongodb+srv://jooaogabriiiel:@llons-Y42@cluster0.og3xu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
