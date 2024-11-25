@@ -1,5 +1,6 @@
 import fs from "fs";
-import {getTodosPosts, criarPost} from "../models/postsModel.js";
+import {getTodosPosts, criarPost, atualizarPost} from "../models/postsModel.js";
+import gerarDescricaoComGemini from "../services/geminiService.js";
 
 // Rota para listar todos os posts
 export async function listarPosts (req, res) {
@@ -37,9 +38,31 @@ export async function uploadImagem(req, res) {
         // Cria o novo post no banco de dados
         const postCriado = await criarPost(novoPost);
         // Gera o novo nome da imagem
-        const imagemAtualizada = `uploads/${postCriado.insertedId}.png`;
+        const imagemAtualizada = `uploads/${postCriado.insertedId}.png`
         // Renomeia o arquivo da imagem para o novo nome
-        fs.renameSync(req.file.path, imagemAtualizada);
+        fs.renameSync(req.file.path, imagemAtualizada)
+        // Envia uma resposta com status 200 (OK) e o post criado em formato JSON
+        res.status(200).json(postCriado)
+    } catch(erro) {
+        // Em caso de erro, registra no console e envia uma resposta com status 500
+        console.error(erro.message);
+        res.status(500).json({"Erro" : "Falha na requisição"})
+    }
+}
+
+export async function atualizarNovoPost(req, res) {
+    // Obtém os dados do novo post do corpo da requisição
+    const id = req.params.id;
+    const urlImagem = `http://localhost:3000/${id}.png`
+    try {
+        const imgBuffer = fs.readFileSync(`uploads/${id}.png`)
+        const descricao = await gerarDescricaoComGemini(imgBuffer)
+        const post = {
+            imgUrl: urlImagem,
+            descricao: descricao,
+            alt: req.body.alt
+        }
+        const postCriado = await atualizarPost(id, post);
         // Envia uma resposta com status 200 (OK) e o post criado em formato JSON
         res.status(200).json(postCriado);
     } catch(erro) {

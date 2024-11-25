@@ -1,4 +1,5 @@
 import conectarAoBanco from "../config/dbConfig.js";
+import{ ObjectId } from "mongodb";
 // Importa a função `conectarAoBanco` do arquivo `dbConfig.js`. 
 // Essa função é responsável por estabelecer a conexão com o banco de dados.
 
@@ -28,6 +29,18 @@ export async function criarPost(novoPost) {
     // Obtem a coleção "posts" dentro do banco de dados.
 
     return colecao.insertOne(novoPost);
+    // Insere um novo documento (post) na coleção "posts". O parâmetro `novoPost` contém os dados do novo post. 
+    // Retorna um objeto com informações sobre o documento inserido.
+}
+
+export async function atualizarPost(id, novoPost) {
+    const db = conexao.db("imersao-instabytes");
+    // Obtem o banco de dados "imersao-instabytes" a partir da conexão estabelecida.
+
+    const colecao = db.collection("posts");
+    // Obtem a coleção "posts" dentro do banco de dados.
+    const objID = ObjectId.createFromHexString(id);
+    return colecao.updateOne({_id:new ObjectId(objID)}, {$set:novoPost});
     // Insere um novo documento (post) na coleção "posts". O parâmetro `novoPost` contém os dados do novo post. 
     // Retorna um objeto com informações sobre o documento inserido.
 }
